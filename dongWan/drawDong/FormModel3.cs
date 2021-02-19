@@ -665,6 +665,10 @@ namespace drawDong
             return null;*/
 
             int arg0 = rowIndex * columnSize + columnIndex;
+            if (dLinesDataOri.Count <= arg0) 
+            {
+                return null;
+            }
             return (dLine)dLines[((dLine)dLinesDataOri[arg0]).getLinesIndex()];
         }
 
@@ -698,7 +702,7 @@ namespace drawDong
                             clr = Color.Blue;
                             break;
                     }
-                    using (Brush  backColorBrush = new SolidBrush(clr), redBrush = new SolidBrush(Color.Red))
+                    using (Brush backColorBrush = new SolidBrush(clr), redBrush = new SolidBrush(Color.Red))
                     {
                         Pen gridRedLinePen = new Pen(redBrush);
                         gridRedLinePen.Width = 1.0f;
@@ -711,6 +715,23 @@ namespace drawDong
                             e.Graphics.DrawString((String)e.Value, f, Brushes.Red, e.CellBounds.X + 2, e.CellBounds.Y + 2, StringFormat.GenericDefault);
                         }
                         e.Handled = true;
+                    }
+                }
+                else
+                {
+                    using (Brush backColorBrush = new SolidBrush(e.CellStyle.BackColor))
+                    {
+                        // using (Pen gridLinePen = new Pen(gridBrush))
+                        {
+                            e.Graphics.FillRectangle(backColorBrush, e.CellBounds);//默认
+
+                            if (e.Value != null)
+                            {
+                                Font f = new Font(e.CellStyle.Font.Name, e.CellStyle.Font.Size, FontStyle.Bold);
+                                e.Graphics.DrawString((String)e.Value, f, line.getColor() == Color.Empty ? Brushes.Black : new SolidBrush(line.getColor()), e.CellBounds.X + 2, e.CellBounds.Y + 2, StringFormat.GenericDefault);
+                            }
+                            e.Handled = true;
+                        }
                     }
                 }
             }
@@ -727,7 +748,7 @@ namespace drawDong
                 }
                 else
                 {
-                     using (SolidBrush backColorBrush = new SolidBrush(this.dataGridView2.BackgroundColor))
+                    using (SolidBrush backColorBrush = new SolidBrush(this.dataGridView2.BackgroundColor))
                     {
                         e.Graphics.FillRectangle(backColorBrush, e.CellBounds);
                         e.Handled = true;
@@ -928,9 +949,15 @@ namespace drawDong
                     for (int j = 0; j < this.dataGridView2.Columns.Count; j++)
                     {
                         string cellContent = "";
-                        if (null != this.dataGridView2.Rows[i].Cells[j].Value)
+                        DataGridViewCell obj = this.dataGridView2.Rows[i].Cells[j];
+                        if (null != obj.Value)
                         {
-                            cellContent = this.dataGridView2.Rows[i].Cells[j].Value.ToString().Trim();
+                            cellContent = obj.Value.ToString().Trim();
+                        }
+                        if (Color.Empty != obj.Style.ForeColor)
+                        {
+                            cellContent += ";";
+                            cellContent += obj.Style.ForeColor.Name;
                         }
                         arg0.Append(cellContent);
                         strBuilder.Append(cellContent + ",");
