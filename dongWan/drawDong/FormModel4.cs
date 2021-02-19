@@ -108,6 +108,11 @@ namespace drawDong
 
         private void run()
         {
+            if (0 == rowCount) 
+            {
+                this.progressBar1.Visible = false;
+                return;
+            }
             int yu = rowCount % 20;
             int size = rowCount / 20 + (yu > 0 ? 1 : 0);
             int step = 100 / size;
@@ -820,9 +825,15 @@ namespace drawDong
                     for (int j = 0; j < this.dataGridView2.Columns.Count; j++)
                     {
                         string cellContent = "";
-                        if (null != this.dataGridView2.Rows[i].Cells[j].Value)
+                        DataGridViewCell obj = this.dataGridView2.Rows[i].Cells[j];
+                        if (null != obj.Value)
                         {
-                            cellContent = this.dataGridView2.Rows[i].Cells[j].Value.ToString().Trim();
+                            cellContent = obj.Value.ToString().Trim();
+                        }
+                        if (Color.Empty != obj.Style.ForeColor)
+                        {
+                            cellContent += ";";
+                            cellContent += obj.Style.ForeColor.Name;
                         }
                         arg0.Append(cellContent);
                         strBuilder.Append(cellContent + ",");
@@ -911,7 +922,7 @@ namespace drawDong
                         // Draw the text content of the cell, ignoring alignment.
                         if (e.Value != null)
                         {
-                            e.Graphics.DrawString((String)e.Value, e.CellStyle.Font, Brushes.Black, e.CellBounds.X + 2, e.CellBounds.Y + 2, StringFormat.GenericDefault);
+                           e.Graphics.DrawString((String)e.Value, e.CellStyle.Font,null == line || line.getColor() == Color.Empty ? Brushes.Black : new SolidBrush(line.getColor()), e.CellBounds.X + 2, e.CellBounds.Y + 2, StringFormat.GenericDefault);
                         }
                         e.Handled = true;
 
@@ -920,7 +931,7 @@ namespace drawDong
             }
             else
             {
-                using (SolidBrush backColorBrush = new SolidBrush(this.dataGridView2.BackgroundColor))
+                 using (SolidBrush backColorBrush = new SolidBrush(this.dataGridView2.BackgroundColor))
                 {
                     e.Graphics.FillRectangle(backColorBrush, e.CellBounds);
                     e.Handled = true;
