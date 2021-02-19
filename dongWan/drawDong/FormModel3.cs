@@ -298,10 +298,18 @@ namespace drawDong
                 }
                 for (int i = 0; i < items.Length; i++)
                 {
+                    string value = items[i].Equals("-1") ? "" : items[i];
+                    string[] valueArr = value.Split(';');
+
                     dLine dline = new dLine();
-                    dline.setValue(items[i].Equals("-1") ? "" : items[i]);
+                    dline.setValue(valueArr[0]);
                     dline.setCloumnIndex(i);
                     dline.setRowIndex(rowCount);
+                    if (valueArr.Length > 1)
+                    {
+                        dline.setColor(Color.FromName(valueArr[1]));
+                    }
+
                     dLinesDataOri.Add(dline);
                     if (dline.getValue() == "1")
                     {
@@ -894,8 +902,8 @@ namespace drawDong
 
         private void button4_Click(object sender, EventArgs e)
         {
-            this.dataGridView1.ReadOnly = false;
-
+            this.dataGridView1.ReadOnly = false; 
+            this.dataGridView2.ReadOnly = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -1021,6 +1029,23 @@ namespace drawDong
         private void button7_Click(object sender, EventArgs e)
         {
             this.ts = true;
+        }
+
+        private void dataGridView2_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (this.dataGridView2.ReadOnly)
+            {
+                return;
+            }
+            this.dataGridView2.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = Color.Red;
+            foreach (dLine dline in dLines)
+            {
+                if (dline.getCloumnIndex() == e.ColumnIndex && dline.getRowIndex() == e.RowIndex)
+                {
+                    dline.setColor(Color.Red);
+                    break;
+                }
+            }
         }
 
         private void button8_Click(object sender, EventArgs e)

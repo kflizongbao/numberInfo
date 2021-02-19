@@ -2143,6 +2143,11 @@ namespace drawDong
             }
         }
 
+        private void progressBar1_Click(object sender, EventArgs e)
+        {
+
+        }
+
         public void theout(object source, System.Timers.ElapsedEventArgs e)
         {
             if (!(null == this) && !this.IsDisposed && !this.IsHandleCreated)
