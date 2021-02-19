@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 
 namespace drawDong
 {
     public static class GlobalVariables
     {
-        public static string firPath = "F:" + @"\" + "vsWork" + @"\" + "drawDongv1" + @"\" + "drawDong" + @"\" + "files";
+        public static string firPath = "D:" + @"\" + "workspace" + @"\" + "numberInfo" + @"\" + "drawDong" + @"\" + "files";
 
         public static int fileNumber = 6;
 
@@ -18,7 +19,7 @@ namespace drawDong
         public static string infoPath = GlobalVariables.firPath + @"\" + "info.ini";
         public static string confPath = GlobalVariables.firPath + @"\" + "conf.ini";
 
-        public static string xuanxiangPath = "F:" + @"\" + "vsWork" + @"\" + "drawDongv1" + @"\" + "drawDong" + @"\" + "xuanxiang";
+        public static string xuanxiangPath = "D:" + @"\" + "workspace" + @"\" + "numberInfo" + @"\" + "drawDong" + @"\" + "xuanxiang";
 
         public static Boolean disa()
         {
@@ -28,7 +29,7 @@ namespace drawDong
             TimeSpan ts = DateTime.Parse(dt1) - DateTime.Parse(dt);
             if (ts.Days > 60)
             {
-                return true;
+                return false;
             }
             return false;
         }
@@ -50,6 +51,7 @@ namespace drawDong
         private int interval = 0;
         private int linesIndex;
         private int oriIndex;
+        private Color color = Color.Empty;
 
         public void setLinesIndex(int linesIndex)
         {
@@ -181,6 +183,15 @@ namespace drawDong
             return this.interval;
         }
 
+        public void setColor(Color color)
+        {
+            this.color = color;
+        }
+
+        public Color getColor()
+        {
+            return this.color;
+        }
     }
 
 
