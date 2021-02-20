@@ -184,11 +184,16 @@ namespace drawDong
                 for (int i = 0; i < items.Length; i++)
                 {
                     string value = items[i].Equals("-1") ? "" : items[i];
+                    string[] valueArr = value.Split(';');
 
                     dLine dline = new dLine();
-                    dline.setValue(value);
+                    dline.setValue(valueArr[0]);
                     dline.setCloumnIndex(i);
                     dline.setRowIndex(rowCount);
+                    if (valueArr.Length > 1)
+                    {
+                        dline.setColor(Color.FromName(valueArr[1]));
+                    }
                     dLinesDataOri.Add(dline);//原始的数据
 
 
@@ -900,7 +905,7 @@ namespace drawDong
             }
             return line;*/
 
-            int arg0 = (rowIndex - (rowIndex > 0 ? 1 : 0)) * columnSize + columnIndex;
+            int arg0 = (rowIndex - (rowIndex > 0 ? 0 : 0)) * columnSize + columnIndex;
             dLine line = (dLine)dLinesDataOri[arg0];
             return line;
         }
@@ -1756,6 +1761,7 @@ namespace drawDong
         private void button4_Click(object sender, EventArgs e)
         {
             this.dataGridView1.ReadOnly = false;
+            this.dataGridView2.ReadOnly = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -1785,9 +1791,15 @@ namespace drawDong
                     for (int j = 0; j < this.dataGridView2.Columns.Count; j++)
                     {
                         string cellContent = "";
-                        if (null != this.dataGridView2.Rows[i].Cells[j].Value)
+                        DataGridViewCell obj = this.dataGridView2.Rows[i].Cells[j];
+                        if (null != obj.Value)
                         {
-                            cellContent = this.dataGridView2.Rows[i].Cells[j].Value.ToString().Trim();
+                            cellContent = obj.Value.ToString().Trim();
+                        }
+                        if (Color.Empty != obj.Style.ForeColor)
+                        {
+                            cellContent += ";";
+                            cellContent += obj.Style.ForeColor.Name;
                         }
                         arg0.Append(cellContent);
                         strBuilder.Append(cellContent + ",");
@@ -1932,6 +1944,54 @@ namespace drawDong
             col2 = -1;
             row2 = -1;
             dvIndex = -1;
+        }
+
+        private void dataGridView2_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            int columnIndex = e.ColumnIndex;
+            int rowIndex = e.RowIndex;
+
+            if (columnIndex <= columnSize && dLinesColumns.Contains(columnIndex) && columnIndex >= 0 && rowIndex >= 0 && rowCount > rowIndex)
+            {
+                // 开始重绘背景
+                dLine line = getLine(columnIndex, rowIndex);
+
+                using (Brush backColorBrush = new SolidBrush(e.CellStyle.BackColor))
+                {
+                    e.Graphics.FillRectangle(backColorBrush, e.CellBounds);
+                    if (e.Value != null)
+                    {
+                        e.Graphics.DrawString((String)e.Value, e.CellStyle.Font, null == line || line.getColor() == Color.Empty ? Brushes.Black : new SolidBrush(line.getColor()), e.CellBounds.X + 2, e.CellBounds.Y + 2, StringFormat.GenericDefault);
+                    }
+                    e.Handled = true;
+                }
+                // 结束重绘背景
+            }
+            else
+            {
+                using (SolidBrush backColorBrush = new SolidBrush(this.dataGridView2.BackgroundColor))
+                {
+                    e.Graphics.FillRectangle(backColorBrush, e.CellBounds);
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void dataGridView2_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (this.dataGridView2.ReadOnly)
+            {
+                return;
+            }
+            this.dataGridView2.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor = Color.Red;
+            foreach (dLine dline in dLines)
+            {
+                if (dline.getCloumnIndex() == e.ColumnIndex && dline.getRowIndex() == e.RowIndex)
+                {
+                    dline.setColor(Color.Red);
+                    break;
+                }
+            }
         }
 
         private void button7_Click(object sender, EventArgs e)

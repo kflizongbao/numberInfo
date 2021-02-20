@@ -236,6 +236,7 @@ namespace drawDong
         private void button4_Click(object sender, EventArgs e)
         {
             this.dataGridView1.ReadOnly = false;
+            this.dataGridView2.ReadOnly = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -259,9 +260,15 @@ namespace drawDong
                     for (int j = 0; j < this.dataGridView2.Columns.Count; j++)
                     {
                         string cellContent = "";
-                        if (null != this.dataGridView2.Rows[i].Cells[j].Value)
+                        DataGridViewCell obj = this.dataGridView2.Rows[i].Cells[j];
+                        if (null != obj.Value)
                         {
-                            cellContent = this.dataGridView2.Rows[i].Cells[j].Value.ToString().Trim();
+                            cellContent = obj.Value.ToString().Trim();
+                        }
+                        if (Color.Empty != obj.Style.ForeColor)
+                        {
+                            cellContent += ";";
+                            cellContent += obj.Style.ForeColor.Name;
                         }
                         arg0.Append(cellContent);
                         strBuilder.Append(cellContent + ",");
@@ -379,10 +386,17 @@ namespace drawDong
                 }
                 for (int i = 0; i < items.Length; i++)
                 {
+                    string value = items[i].Equals("-1") ? "" : items[i];
+                    string[] valueArr = value.Split(';');
+
                     dLine dline = new dLine();
-                    dline.setValue(items[i].Equals("-1") ? "" : items[i]);
+                    dline.setValue(valueArr[0]);
                     dline.setCloumnIndex(i);
                     dline.setRowIndex(rowCount);
+                    if (valueArr.Length > 1)
+                    {
+                        dline.setColor(Color.FromName(valueArr[1]));
+                    }
                     dLinesDataOri.Add(dline);
 
                     if (dline.getValue().Length > 0)
@@ -2575,7 +2589,7 @@ namespace drawDong
 
                             if (e.Value != null)
                             {
-                                e.Graphics.DrawString((String)e.Value, e.CellStyle.Font, Brushes.Black, e.CellBounds.X + 2, e.CellBounds.Y + 2, StringFormat.GenericDefault);
+                                e.Graphics.DrawString((String)e.Value, e.CellStyle.Font, null == line || line.getColor() == Color.Empty ? Brushes.Black : new SolidBrush(line.getColor()), e.CellBounds.X + 2, e.CellBounds.Y + 2, StringFormat.GenericDefault);
                             }
                             e.Handled = true;
 

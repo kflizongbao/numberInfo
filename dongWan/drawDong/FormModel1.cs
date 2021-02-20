@@ -689,7 +689,7 @@ namespace drawDong
 
                                 if (e.Value != null)
                                 {
-                                    e.Graphics.DrawString((String)e.Value, e.CellStyle.Font, line.getColor() == Color.Empty ? Brushes.Black : new SolidBrush(line.getColor()), e.CellBounds.X + 2, e.CellBounds.Y + 2, StringFormat.GenericDefault);
+                                    e.Graphics.DrawString((String)e.Value, e.CellStyle.Font, null == line || line.getColor() == Color.Empty ? Brushes.Black : new SolidBrush(line.getColor()), e.CellBounds.X + 2, e.CellBounds.Y + 2, StringFormat.GenericDefault);
                                 }
                                 e.Handled = true;
 
